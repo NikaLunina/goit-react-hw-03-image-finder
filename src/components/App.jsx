@@ -23,20 +23,12 @@ export class App extends Component {
     this.setState({ searchText });
   };
 
-  // componentDidUpdate(prevProps, prevState){
-  //   const searchText = this.state.searchText.trim()
 
-  //   if(prevProps.searchText!==searchText && searchText){
-  //     getImages(searchText).then(({hits, totalHits}) => {
-  //       this.setState({images: hits})
-  //     })
-  //   }
-  // }
   componentDidUpdate(prevProps, prevState) {
     const searchText = this.state.searchText.trim();
 
     if (prevState.searchText !== searchText && searchText) {
-      this.setState({isLoading: true})
+      this.setState({isLoading:true, page:1})
 
       getImages(searchText, 1)
         .then(data => {
@@ -54,6 +46,7 @@ export class App extends Component {
             return Promise.reject(data.message);
           }
           else if (data.totalHits > 0) {
+            this.setState({isLoading: false})
             Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
           }
           const imgArr = data.hits.map(
@@ -71,12 +64,11 @@ export class App extends Component {
         })
         .catch(error => {
           this.setState({ error });
-        });
+        })
     }
 
     if (prevState.page !== this.state.page && this.state.page !== 1) {
-      
-
+      this.setState({isLoading:true})
       getImages(searchText, this.state.page)
         .then(data => {
           if (data.totalHits === 0) {
@@ -105,12 +97,12 @@ export class App extends Component {
         })
         .catch(error => {
           this.setState({ error});
-        });
+        })
     }
   }
 
   nextPage = () => {
-    this.setState(prevState => ({page: prevState.page + 1 }));
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   openModal = e => {
@@ -145,7 +137,7 @@ export class App extends Component {
         {isLoading && <Loader />}
         {error && `${error}`}
         {images && <ImageGallery images={images} openModal={this.openModal} />}
-        {this.onButtonVisible() && <Button nextPage={this.nextPage} />}
+        {  this.onButtonVisible() && <Button nextPage={this.nextPage} />}
         {showModal && (
           <Modal onClose={this.toggleModal} largeImage={largeImage} />
         )}

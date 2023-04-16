@@ -16,7 +16,7 @@ export class Searchbar extends Component {
     if(this.state.value.trim() === ''){
       return  Notiflix.Notify.failure("Request cannot be empty. Please enter a value!")
     }
-  this.props.onSubmit(this.state.value)
+  this.props.onSubmit(this.state.value.trim())
   this.setState({ value: '' });
   };
   render() {
